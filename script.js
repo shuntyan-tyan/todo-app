@@ -1,4 +1,4 @@
-// 1. アプリ起動時に「裏方の仕組み（sw.js）」をiPhoneに登録する
+// 1. 裏方の仕組み（sw.js）を登録する
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
     .then(() => {
@@ -9,16 +9,14 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// 2. 「🔔 通知をオンにする」ボタンを押したときの処理
+// 2. 「通知をオンにする」ボタンを押したときの処理
 function requestNotificationPermission() {
   if ('Notification' in window) {
     Notification.requestPermission().then((permission) => {
       if (permission === 'granted') {
-        alert('通知が許可されました！');
+        alert('✅ 通知が許可されました！これで準備完了です。');
       } else if (permission === 'denied') {
-        alert('通知が拒否されています。スマホの設定から通知を許可してください。');
-      } else {
-        alert('通知の設定がキャンセルされました。');
+        alert('❌ 通知が拒否されています。iPhoneの設定アプリから通知を許可してください。');
       }
     });
   } else {
@@ -26,26 +24,48 @@ function requestNotificationPermission() {
   }
 }
 
-// 3. 「追加」ボタンを押したときの処理
+// 3. 「タスクを追加」ボタンを押したときの処理
 function addTask() {
   const taskInput = document.getElementById('taskInput');
   const timeInput = document.getElementById('timeInput');
+  const taskList = document.getElementById('taskList');
   
   const taskText = taskInput.value;
-  const targetTime = new Date(timeInput.value).getTime();
-  const now = new Date().getTime();
-  const timeToWait = targetTime - now;
+  const timeValue = timeInput.value;
 
-  // 入力チェック
-  if (!taskText || !timeInput.value) {
-    alert('タスクと時間を両方入力してください！');
+  if (!taskText || !timeValue) {
+    alert('やることと時間の両方を入力してください！');
     return;
   }
+
+  const targetTime = new Date(timeValue).getTime();
+  const now = new Date().getTime();
+  const timeToWait = targetTime - now;
 
   if (timeToWait <= 0) {
     alert('未来の時間を設定してください！');
     return;
   }
+
+  // 画面のタスク一覧に新しいカードを追加する
+  const li = document.createElement('li');
+  li.className = 'task-item';
+  
+  // 日時の見た目を綺麗に整える（例：2026/09/23 21:00）
+  const displayTime = new Date(timeValue).toLocaleString('ja-JP', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  li.innerHTML = `
+    <div class="task-info">
+      <span class="task-title">📌 ${taskText}</span>
+      <span class="task-time">⏰ ${displayTime} に通知</span>
+    </div>
+  `;
+  taskList.appendChild(li);
 
   // 裏方の仕組み（sw.js）へ通知を依頼する
   if ('serviceWorker' in navigator) {
@@ -53,16 +73,12 @@ function addTask() {
       if (registration.active) {
         registration.active.postMessage({
           type: 'SCHEDULE_NOTIFICATION',
-          title: 'ToDoリマインダー',
+          title: '⏰ ToDoリマインダー',
           body: taskText,
           delay: timeToWait
         });
-        alert('タスクを追加し、通知をセットしました！');
-      } else {
-        alert('裏方の準備がまだできていません。もう一度試してください。');
+        alert('タスクを一覧に追加し、通知をセットしました！');
       }
-    }).catch(() => {
-      alert('タスクは追加されました（通知のセットに失敗しました）');
     });
   }
 
