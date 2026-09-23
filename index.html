@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シンプルToDoアプリ</title>
+  <link rel="manifest" href="manifest.json">
+  <!-- ★CSS（デザイン）を読み込むつなぎめ！ -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>My ToDo List</h1>
+    
+    <!-- 通知の許可をもらうボタン -->
+    <button id="notify-permission-btn" class="permission-btn">🔔 通知をオンにする</button>
+
+    <!-- タスク入力エリア -->
+    <div class="input-area">
+      <input type="text" id="task-input" placeholder="やることを入力...">
+      <input type="datetime-local" id="task-time">
+      <button id="add-btn">追加</button>
+    </div>
+
+    <!-- タスク一覧を表示する場所 -->
+    <ul id="task-list"></ul>
+  </div>
+
+  <!-- ★JavaScript（動き）を読み込むつなぎめ！ -->
+  <script src="script.js"></script>
+</body>
+</html>
