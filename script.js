@@ -9,14 +9,16 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// 2. 通知の許可を求める関数
+// 2. 「🔔 通知をオンにする」ボタンを押したときの処理
 function requestNotificationPermission() {
   if ('Notification' in window) {
     Notification.requestPermission().then((permission) => {
       if (permission === 'granted') {
         alert('通知が許可されました！');
+      } else if (permission === 'denied') {
+        alert('通知が拒否されています。スマホの設定から通知を許可してください。');
       } else {
-        alert('通知が拒否されました。設定から許可してください。');
+        alert('通知の設定がキャンセルされました。');
       }
     });
   } else {
@@ -24,15 +26,17 @@ function requestNotificationPermission() {
   }
 }
 
-// 3. タスクを追加して通知をセットする関数
+// 3. 「追加」ボタンを押したときの処理
 function addTask() {
   const taskInput = document.getElementById('taskInput');
   const timeInput = document.getElementById('timeInput');
+  
   const taskText = taskInput.value;
   const targetTime = new Date(timeInput.value).getTime();
   const now = new Date().getTime();
   const timeToWait = targetTime - now;
 
+  // 入力チェック
   if (!taskText || !timeInput.value) {
     alert('タスクと時間を両方入力してください！');
     return;
@@ -43,7 +47,7 @@ function addTask() {
     return;
   }
 
-  // 裏方の仕組み（sw.js）に「時間になったら通知を出して！」と依頼する
+  // 裏方の仕組み（sw.js）へ通知を依頼する
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then((registration) => {
       if (registration.active) {
@@ -54,7 +58,11 @@ function addTask() {
           delay: timeToWait
         });
         alert('タスクを追加し、通知をセットしました！');
+      } else {
+        alert('裏方の準備がまだできていません。もう一度試してください。');
       }
+    }).catch(() => {
+      alert('タスクは追加されました（通知のセットに失敗しました）');
     });
   }
 
