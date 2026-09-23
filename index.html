@@ -12,16 +12,22 @@
     <h1>📝 ToDoリスト</h1>
 
     <!-- 🔔 通知許可ボタン -->
-    <button id="notificationBtn" onclick="requestNotificationPermission()">🔔 通知をオンにする</button>
+    <button id="notificationBtn" onclick="requestNotificationPermission()">
+      🔔 まずタップして「通知をオン」にする
+    </button>
 
     <!-- 📝 タスク入力エリア -->
     <div class="input-group">
-      <input type="text" id="taskInput" placeholder="やることを入力">
+      <label for="taskInput">やることを入力：</label>
+      <input type="text" id="taskInput" placeholder="例：買い物に行く">
+      
+      <label for="timeInput">通知する日時：</label>
       <input type="datetime-local" id="timeInput">
-      <button id="addBtn" onclick="addTask()">追加</button>
+      
+      <button id="addBtn" onclick="addTask()">➕ タスクを追加して通知予約</button>
     </div>
 
-    <!-- 📋 タスク一覧 -->
+    <h2>📋 セットしたタスク一覧</h2>
     <ul id="taskList"></ul>
   </div>
 
